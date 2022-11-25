@@ -1,6 +1,9 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -54,6 +57,7 @@ class RouteNode<T extends GraphNode> implements Comparable<RouteNode> {
     public double getRouteScore() { return routeScore; }
     public double getEstimatedScore() { return estimatedScore; }
 
+    public void setPrevious(T previous) { this.previous = previous; }
     public void setRouteScore(double routeScore) { this.routeScore = routeScore; }
     public void setEstimatedScore(double estimatedScore) { this.estimatedScore = estimatedScore; }
 
@@ -114,26 +118,48 @@ class RouteFinder<T extends GraphNode> {
     public List<T> findRoute(T from, T to) {
 
         Map<T, RouteNode<T>> allNodes = new HashMap<>();
-        Queue<RouteNode>
-        return null; // again I'll do this later さよなら！
+        
+        // define the open set
+        Queue<RouteNode> openSet = new PriorityQueue<>();
+
+        RouteNode<T> start = new RouteNode<>(from, null, 0d, targetScorer.computeCost(from,to));
+        allNodes.put(from,start); // remember that allNodes is a map that contains a mapping of GraphNode subclass instances and RouteNodes instances
+        openSet.add(start); // add the starting node to the open set (this is apart of the algorithm if I can remember the notes)
+        
+        while(!openSet.isEmpty()) {
+            RouteNode<T> next = openSet.poll(); // get the next node that is going to be examined (popped from the head of the queue)
+
+            if(next.getCurrent().equals(to)) { // if we have reached the destination
+                List<T> route = new ArrayList<>(); // this is the arraylist containing the route from point A to point B
+                RouteNode<T> current = next; // visualising this action as iterating over nodes
+                
+                do {
+                    route.add(0, current.getCurrent());
+                    current = allNodes.get(current.getPrevious());
+                } while(current != null);
+
+                return route; // we're done! (first option)
+            }
+
+            graph.getConnections(next.getCurrent()).forEach(connection -> {
+                // calculate the f value for the node (since this is the most general form of the algorithm, we will use Euclidean Distance)
+                double newScore = next.getRouteScore() + nextNodeScorer.computeCost(next.getCurrent(), connection); // the score is determined by the distance algorithm
+                // I'll make some more implementations for finding a better h value in the NodeScorer class
+                RouteNode<T> nextNode = allNodes.getOrDefault(connection, new RouteNode<>(connection));
+                allNodes.put(connection, nextNode);
+
+                if(nextNode.getRouteScore() > newScore) {
+                    nextNode.setPrevious(next.getCurrent());
+                    nextNode.setRouteScore(newScore);
+                    nextNode.setEstimatedScore(newScore + targetScorer.computeCost(connection,to));
+                    openSet.add(nextNode);
+                }
+
+                throw new IllegalStateException("No route found"); // I'll make a handle for this when my brain stops hurting
+            });
+        }
+        return null; // well... loks like there wasn't a route! (I'll make a handle for this...)
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// 無い
