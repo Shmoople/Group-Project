@@ -1,6 +1,6 @@
 package astar;
 
-class RouteNode<T extends GraphNode> implements Comparable<RouteNode> {
+public class RouteNode<T extends GraphNode> implements Comparable<RouteNode> {
 
     /* Fields */
     private final T current;

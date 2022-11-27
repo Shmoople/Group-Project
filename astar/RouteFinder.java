@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
-class RouteFinder<T extends GraphNode> {
+public class RouteFinder<T extends GraphNode> {
 
     private final Graph<T> graph;
     private final Scorer<T> nextNodeScorer;
@@ -37,7 +37,7 @@ class RouteFinder<T extends GraphNode> {
         Map<T, RouteNode<T>> allNodes = new HashMap<>();
         
         // define the open set
-        Queue<RouteNode> openSet = new PriorityQueue<>();
+        Queue<RouteNode<T>> openSet = new PriorityQueue<>();
 
         RouteNode<T> start = new RouteNode<>(from, null, 0d, targetScorer.computeCost(from,to));
         allNodes.put(from,start); // remember that allNodes is a map that contains a mapping of GraphNode subclass instances and RouteNodes instances
@@ -72,10 +72,13 @@ class RouteFinder<T extends GraphNode> {
                     openSet.add(nextNode);
                 }
 
-                throw new IllegalStateException("No route found"); // I'll make a handle for this when my brain stops hurting
             });
         }
-        return null; // well... loks like there wasn't a route! (I'll make a handle for this...)
+
+        // Right now this just throws an exception if no route if found (this code won't throw an exception if there is always a route [in other words this is garbage])
+        throw new IllegalStateException("No route found"); // I'll make a handle for this when my brain stops hurting
+        
+        // return null; // well... loks like there wasn't a route! (I'll make a handle for this...)
     }
 }
 

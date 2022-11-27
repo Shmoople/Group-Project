@@ -1,5 +1,5 @@
 package astar;
 
-interface GraphNode {
+public interface GraphNode {
     String getId();
 }

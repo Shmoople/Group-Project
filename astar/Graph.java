@@ -15,10 +15,16 @@ public class Graph<T extends GraphNode> {
     }
 
     public T getNode(String id) {
+
+        // first time working with streams and its making my balls bleed
         return nodes.stream()
-        .filter(node -> node.getId().equals(id))
+        .filter(node -> node.getId().equals(id)) // so many fucking lambda expressions
         .findFirst()
         .orElseThrow(() -> new IllegalArgumentException("No node found with that ID!"));
+    }
+
+    public Set<T> getNodes() {
+        return nodes.stream().collect(Collectors.toSet()); // dude why did I do that just return the fucking set im so drunk i need sleep i think i have a cold
     }
 
     public Set<T> getConnections(T node) {
