@@ -12,7 +12,7 @@ import javafx.scene.shape.Rectangle;
  */
 
 
-public class Location implements GraphNode, Scorer<Location>, Displayable { // directly bound to group?
+public class Location implements GraphNode, Scorer<Location>, Displayable { // directly bound to group? why the fuck would this also be a scorer?
 
     private Circle r2;
     private String id;
@@ -27,7 +27,7 @@ public class Location implements GraphNode, Scorer<Location>, Displayable { // d
 
     public Point2D getPosition() {return this.position; }
 
-    @Override
+    @Override // display implementation in the file is a little bit weird ngl
     public Node display() { // gonna need javafx for this stuff... WE'LL BE OK YEAAAAAAAAAAAAAAAAAAAAAAAA 大丈夫!
         r2.setCenterX(position.getX());
         r2.setCenterY(position.getY());

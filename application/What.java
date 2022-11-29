@@ -22,10 +22,16 @@ public class What {
     public static void main(String[] args) {
 
         Graph<Thing> graphyGraphington = createGrid(8,3,10); // create a 5x5 grid with a spacing of 10 between each node! (the first node is at 0,0)
-        
         RouteFinder<Thing> routeFinder = new RouteFinder<Thing>(graphyGraphington, new ThingScorer(), new ThingScorer());
         List<Thing> route = routeFinder.findRoute(graphyGraphington.getNode("0-2"),graphyGraphington.getNode("7-2"));
+
         printRoute(route);
+   }
+ 
+    /* 
+        // printing out the route finder object can be done through a local or static context
+        // I personally wouldn't use the static context since there isn't much reason to provide a "printout" implementation in a file like that
+
         // printAdjacencyList(graphyGraphington);
 
         // // great another run configuratoin
@@ -63,17 +69,18 @@ public class What {
 
         // printAdjacencyList(graphOfThings);
 
-        // /* FIND THE ROUTE */
+        // FIND THE ROUTE
         // RouteFinder<Thing> routeFinder = new RouteFinder<>(graphOfThings, new ThingScorer(), new ThingScorer());
         // List<Thing> route = routeFinder.findRoute(graphOfThings.getNode("a"), graphOfThings.getNode("c"));
 
         // for(Thing t : route) {
         //     System.out.println(t.getId());
         // }
-    }
     
-    // Graph<Thing> graphOfThings = new Graph
-    // List<Thing> route = routeFinder.findRoute
+        
+        // Graph<Thing> graphOfThings = new Graph
+        // List<Thing> route = routeFinder.findRoute
+    */
 
     public static <T extends GraphNode> void printRoute(List<T> l) {
         System.out.print("start: ");
@@ -88,16 +95,32 @@ public class What {
 
         /* refer to createStrongGrid for the pain it took to figure this out */
         /* I decided to use if statements because y e s */
-        Thing[][] nodes = new Thing[width][height];
+        Thing[][] nodes = new Thing[width][height]; // this is an unecessary structure (use a set of sets next time)
         
+        /* This block is used to populate the array with a bunch of nodes
+         * the nodes follow the strict naming convention of "i-j"
+         * 
+         * Using "ID" fields rather than object IDs is a little bit easier, this way
+         * we can control the way nodes are named
+         * 
+         * They don't have to be numbers, any id works
+         * 
+         * So if we wanted to make a manual graph (per say the menu or level select) we
+         * could just place the nodes manually using the node constructor (it provides an x and y value for the node)
+         * 
+         * The createGraph functions (createGrid, createDiagnolGrid[unfinished] and createStrongGrid) are all useful for creating a level,
+         * rather than making a menu function
+         */
         for(int i = 0; i < width; i++) {
             for(int j = 0; j < height; j++) {
                 nodes[i][j] = new Thing(i*spacing,j*spacing,String.format("%d-%d",i,j));
             }
         }
 
+        // iterating through a set might be easier, that way this doesn't even have to exist in the first place!
         HashSet<Thing> nodeSet = new HashSet<Thing>();
 
+        // add all nodes from the array
         for(Thing[] i : nodes) {
             for(Thing t : i) {
                 nodeSet.add(t);
@@ -247,12 +270,18 @@ public class What {
     }
     /*implied generics is weird as fuck*/
     public static final <T> Set<T> newHashSet(T... objs) { // Pollution? Yeah I don't think I'll be doing weird casts
+
+        /* Creating a new hashSet without having to use the new operator a dozen times (this method is essentially an initializer list for sets) */
+
         Set<T> set = new HashSet<T>(); // what
         Collections.addAll(set, objs);
         return set;
     }
 
     public static final <T extends GraphNode> void printAdjacencyList(Graph<T> g) {
+
+        // this is good for debugging (adding the JavaFX implementation would make this a hell of a lot easier than drawing one on paper!)
+
         System.out.println("Adjacency list printer 9999 --> ");
         for(T t : g.getNodes()) {
             System.out.print(t.getId()+": ");
@@ -274,7 +303,7 @@ class ThingScorer implements Scorer<Thing> {
 
 class Thing implements GraphNode { // グラフノード
 
-    private Point2D position;
+    private Point2D position; // There is a Position object that would also work for this role (but then you'd have to manually implement euclidean distance)
     private String id;
 
     public Thing(double x, double y, String id) {
